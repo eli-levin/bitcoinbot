@@ -1,0 +1,30 @@
+{
+  "name": "bitcoinbot",
+  "version": "1.0.0",
+  "description": "fb messenger bot for daily bitcoin info",
+  "main": "index.js",
+  "scripts": {
+    "test": "bcbot test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "bitcoinbot"
+  },
+  "keywords": [
+    "bitcoin",
+    "facebook",
+    "messenger",
+    "platform",
+    "bot",
+    "messenger-platform",
+    "btc",
+    "eth"
+  ],
+  "author": "Eli Levin",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "express": "^4.14.0",
+    "request": "^2.79.0"
+  }
+}
