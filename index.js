@@ -16,12 +16,18 @@ app.get('/', (req, res) => {
 });
 
 app.get('/webhook', (req, res) => {
-	if (req.query['hub.verify_token'] === 'btcfbbot93d17fe1'){
-    	res.send(req.query['hub.challenge']);
-    }
-    else{
-    	res.send('Error, wrong validation token');    
-    }
+	if (req.query['hub.mode'] === 'subscribe' && req.query['hub.verify_token'] === <VERIFY_TOKEN>) {
+		console.log("Validating webhook");
+		res.status(200).send(req.query['hub.challenge']);
+	}
+	else{
+		console.error("Failed validation. Make sure the validation tokens match.");
+		res.sendStatus(403);          
+	}  
+});
+
+app.post('/webhook', (req, res) => {
+	let token = process.env.FB_PAGE_ACCESS_TOKEN
 });
 
 app.listen(app.get('port'), () => {
