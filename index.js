@@ -29,12 +29,12 @@ app.use(bodyParser.json());
 //
 // Handler functions
 //
-const formulateAdviceMessage = (body) => {
+const formulateAdviceMessage = (userProfile) => {
     // Procedural function to extract info and create an advice message.
     let msg = ERROR_RESPONSE_STR;
-    if (body) {
+    if (userProfile) {
         // placeholder for better advice algorithm
-        msg = `${body.first_name}, the current trends show a market rally. Buy, buy, buy NOW!`;
+        msg = `${userProfile["first_name"]}, the current trends show a market rally. Buy, buy, buy NOW!`;
     }
     return msg;
 };
@@ -117,11 +117,12 @@ const onReceievedMessage = (event) => {
         case 'adviseme':
             // todo: include graph of btc to usd (would require new function)
             getUserProfile(userID, (err, res, body) => {
+                let userProfile = JSON.parse(body);
                 let msg = ERROR_RESPONSE_STR;
                 if (!err && res.statusCode == 200) {
-                    console.log('Success, recieved user information:', body);
+                    console.log('Success, recieved user information:', userProfile);
                     // placeholder for better advice algorithm
-                    msg = formulateAdviceMessage(body);
+                    msg = formulateAdviceMessage(userProfile);
                 }
                 else {
                     console.log('Unable to get user profile.');
