@@ -27,5 +27,8 @@
     "coinbase": "^2.0.6",
     "express": "^4.14.0",
     "request": "^2.79.0"
+  },
+  "optionalDependencies": {
+    "mocha": "^3.2.0"
   }
 }
