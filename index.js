@@ -146,7 +146,7 @@ const onReceievedMessage = (event) => {
             let client = new CoinbaseClient({'apiKey': userID, 'apiSecret' : CB_CREDS});
             let msg = ERROR_RESPONSE_STR;
             client.getExchangeRates({'currency': 'BTC'}, (err, res) => {
-                if (!err && res.statusCode == 200) {
+                if (!err) {
                     //will change to check myCurrency and then do rates[myCurrency]
                     msg = '1 BTC = $' + res.data.rates.USD;
                 }
