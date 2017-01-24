@@ -26,6 +26,7 @@
     "body-parser": "^1.15.2",
     "coinbase": "^2.0.6",
     "express": "^4.14.0",
+    "os": "^0.1.1",
     "request": "^2.79.0"
   },
   "optionalDependencies": {

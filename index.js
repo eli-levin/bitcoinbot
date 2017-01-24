@@ -4,20 +4,23 @@ const express        = require('express'),
       request        = require('request'),
       bodyParser     = require('body-parser'),
       CoinbaseClient = require('coinbase').Client,
+      os             = require('os'),
       app            = express();
 
 //
 // Macros
 //
-const CB_CREDS             = 'public';
-const FB_SEND_URI          = 'https://graph.facebook.com/v2.6/me/messages';
-const FB_GENERIC_API_URI   = 'https://graph.facebook.com/v2.6/';
-const ERROR_RESPONSE_STR   = 'Oops, something went wrong. Try again later...';
-const DEFAULT_RESPONSE_STR = 'Sorry, I don\'t know what that means. Say "help" for more info!';
-const USER_PROFILE_OPTIONS = 'first_name,last_name,profile_pic,locale,timezone,gender';
-const HELP_RESPONSE_STR    = 'Here is a list of things I\'ll respond to:\n' +
-                             'help --> gets list of commands\n' +
-                             'price --> tells you BTC to USD exchange rate';
+const CB_CREDS              = 'public',
+      FB_SEND_URI           = 'https://graph.facebook.com/v2.6/me/messages',
+      FB_GENERIC_API_URI    = 'https://graph.facebook.com/v2.6/',
+      ERROR_RESPONSE_STR    = 'Oops, something went wrong. Try again later...',
+      DEFAULT_RESPONSE_STR  = 'Sorry, I don\'t know what that means. Say "help" for more info!',
+      USER_PROFILE_OPTIONS  = 'first_name,last_name,profile_pic,locale,timezone,gender',
+      INSIGHT_LEGAL_WARNING = '(Do not take this as investment advice. Consult your own financial advisor for personal investment counsel.)',
+      HELP_RESPONSE_STR     = 'Here is a list of things I\'ll respond to:' + os.EOL +
+                              'help --> gets list of commands' + os.EOL +
+                              'price --> tells you BTC to USD exchange rate' + os.EOL +
+                              'insight --> tells you current buyer trends';
 
 //
 // Init port in app table and process the url and json parsers
@@ -29,18 +32,21 @@ app.use(bodyParser.json());
 //
 // Handler functions
 //
-const formulateAdviceMessage = (userProfile) => {
-    // Procedural function to extract info and create an advice message.
+const formulateInsightMessage = (userProfile) => {
+    // Procedural function to extract info and create an insight message.
     let msg = ERROR_RESPONSE_STR;
     if (userProfile) {
-        // placeholder for better advice algorithm
-        msg = `${userProfile["first_name"]}, the current trends show a market rally. Buy, buy, buy NOW!`;
+        // placeholder for better insight algorithm
+        // check if market is in rally or dive and tell user if btcbot is buying more bitcoin
+        msg = `${userProfile["first_name"]}, the current trends show a market rally. People are buying!` +
+              os.EOL +
+              INSIGHT_LEGAL_WARNING;
     }
     return msg;
 };
 
 const getUserProfile = (userID, cb) => {
-    // Formulate a personalized advice message for the user descibed by userID.
+    // Formulate a personalized insight message for the user descibed by userID.
     let reqBody = {
         uri: (FB_GENERIC_API_URI + userID),
         qs: {
@@ -50,9 +56,32 @@ const getUserProfile = (userID, cb) => {
         method: 'GET'
     };
 
-    // Send the advice to the user via the callback cb.
+    // Send the insight to the user via the callback cb.
     request(reqBody, cb);
 };
+
+// const getUserProfilePromise = (userID) => {
+//     // Get user profile from Graph API.
+//     return new Promise((resolve, reject) => {
+//         let reqBody = {
+//             uri: (FB_GENERIC_API_URI + userID),
+//             qs: {
+//                 access_token: process.env.FB_PAGE_ACCESS_TOKEN,
+//                 fields: USER_PROFILE_OPTIONS
+//             },
+//             method: 'GET'
+//         };
+//         request(reqBody, (err, res, body) => {
+//             if (!err && res.statusCode == 200) {
+//                 resolve(body);
+//             }
+//             else {
+//                 reject(Error(err));
+//             }
+//         });
+//     });
+
+// };
 
 const fbSendAPI = (messageData) => {
     // Send a request to the faceboook SEND api.
@@ -68,9 +97,8 @@ const fbSendAPI = (messageData) => {
             console.log('Success: Sent message %s to recipient %s.', body.message_id, body.recipient_id);
         }
         else {
-            console.error('Unable to send message.');
-            console.error(res);
             console.error(err);
+            console.error(res);
         }
     });
 };
@@ -96,38 +124,50 @@ const onReceievedMessage = (event) => {
         case 'help':
             sendTextMessage(userID, HELP_RESPONSE_STR);
             break;
-        case 'price':
-            // todo: price -c usd|euro|etc (different currencies)
-            // todo: is this dumb in v8? research if singleton client is better
-            let client = new CoinbaseClient({'apiKey': userID, 'apiSecret' : CB_CREDS});
-            let msg = ERROR_RESPONSE_STR;
-            client.getExchangeRates({'currency': 'BTC'}, (err, res) => {
-                if (err) {
-                    console.error('Unable to get data from Coinbase API.');
-                    console.error(res);
-                    console.error(err);
+        case 'yo':
+        case 'hi':
+        case 'hey':
+        case 'hello':
+            getUserProfile(userID, (err, res, body) => {
+                let userProfile = JSON.parse(body);
+                let msg = 'Hi there!';
+                if (!err && res.statusCode == 200) {
+                    msg = `Hi, ${userProfile.first_name}!`;
                 }
                 else {
-                    //will change to check myCurrency and then do rates[myCurrency]
-                    msg = '1 BTC = $' + res.data.rates.USD;
+                    console.error(err);
+                    console.error(res);
                 }
                 sendTextMessage(userID, msg);
             });
             break;
-        case 'adviseme':
+        case 'price':
+            // todo: price -c usd|euro|etc (different currencies)
+            let client = new CoinbaseClient({'apiKey': userID, 'apiSecret' : CB_CREDS});
+            let msg = ERROR_RESPONSE_STR;
+            client.getExchangeRates({'currency': 'BTC'}, (err, res) => {
+                if (!err && res.statusCode == 200) {
+                    //will change to check myCurrency and then do rates[myCurrency]
+                    msg = '1 BTC = $' + res.data.rates.USD;
+                }
+                else {
+                    console.error('Unable to reach Coinbase API: ', err);
+                }
+                sendTextMessage(userID, msg);
+            });
+            break;
+        case 'insight':
             // todo: include graph of btc to usd (would require new function)
             getUserProfile(userID, (err, res, body) => {
                 let userProfile = JSON.parse(body);
                 let msg = ERROR_RESPONSE_STR;
                 if (!err && res.statusCode == 200) {
                     console.log('Success, recieved user information:', userProfile);
-                    // placeholder for better advice algorithm
-                    msg = formulateAdviceMessage(userProfile);
+                    msg = formulateInsightMessage(userProfile);
                 }
                 else {
-                    console.log('Unable to get user profile.');
-                    console.log(res);
-                    console.log(err);
+                    console.error(err);
+                    console.error(res);
                 }
                 sendTextMessage(userID, msg);
             });
@@ -189,5 +229,5 @@ app.listen(app.get('port'), () => {
 // todo: change this to not shit
 module.exports = {
     getUserProfile: getUserProfile,
-    formulateAdviceMessage: formulateAdviceMessage
+    formulateInsightMessage: formulateInsightMessage
 };
