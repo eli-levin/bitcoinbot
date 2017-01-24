@@ -39,8 +39,7 @@ const formulateInsightMessage = (userProfile) => {
         // placeholder for better insight algorithm
         // check if market is in rally or dive and tell user if btcbot is buying more bitcoin
         msg = `${userProfile["first_name"]}, the current trends show a market rally. People are buying!` +
-              os.EOL +
-              INSIGHT_LEGAL_WARNING;
+              os.EOL + '.' + os.EOL + '.' + os.EOL + '.' + os.EOL + INSIGHT_LEGAL_WARNING;
     }
     return msg;
 };
