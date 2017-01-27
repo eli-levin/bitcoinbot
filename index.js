@@ -186,7 +186,7 @@ app.get('/', (req, res) => {
 
 app.get('/webhook', (req, res) => {
     // Validate webhook subscription from client.
-    if (req.query['hub.mode'] === 'subscribe' && req.query['hub.verify_token'] === 'btcfbbot93d17fe1') {
+    if (req.query['hub.mode'] === 'subscribe' && req.query['hub.verify_token'] === process.env.GRAPH_VERIFY_TOKEN) {
         console.log("Validating webhook");
         res.status(200).send(req.query['hub.challenge']);
     }
