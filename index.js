@@ -1,3 +1,9 @@
+/////////////////////////
+// app.js
+// 2017 (c) Eli Levin
+// BitcoinBot
+/////////////////////////
+
 'use strict'
 
 const express        = require('express'),
@@ -15,7 +21,7 @@ const CB_CREDS              = 'public',
       FB_GENERIC_API_URI    = 'https://graph.facebook.com/v2.6/',
       ERROR_RESPONSE_STR    = 'Oops, something went wrong. Try again later...',
       DEFAULT_RESPONSE_STR  = 'Sorry, I don\'t know what that means. Say "help" for more info!',
-      USER_PROFILE_OPTIONS  = 'first_name,last_name,profile_pic,locale,timezone,gender',
+      USER_PROFILE_OPTIONS  = 'first_name,last_name,profile_pic,locale,timezone,gender,user_currency',
       INSIGHT_LEGAL_WARNING = '(Do not take this as investment advice. Consult your own financial advisor for personal investment counsel.)',
       HELP_RESPONSE_STR     = 'Here is a list of things I\'ll respond to:' + os.EOL +
                               'help --> gets list of commands' + os.EOL +
