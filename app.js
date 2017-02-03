@@ -25,7 +25,7 @@ const CB_CREDS              = 'public',
       INSIGHT_LEGAL_WARNING = '(Do not take this as investment advice. Consult your own financial advisor for personal investment counsel.)',
       HELP_RESPONSE_STR     = 'Here is a list of things I\'ll respond to:' + os.EOL +
                               'help --> gets list of commands' + os.EOL +
-                              'price --> tells you BTC to USD exchange rate' + os.EOL +
+                              'price --> tells you spot price of BTC to your local currencey (USD if not specified).' + os.EOL +
                               'insight --> tells you current buyer trends';
 
 //
@@ -64,29 +64,6 @@ const getUserProfile = (userID, cb) => {
     // Send the insight to the user via the callback cb.
     request(reqBody, cb);
 };
-
-// const getUserProfilePromise = (userID) => {
-//     // Get user profile from Graph API.
-//     return new Promise((resolve, reject) => {
-//         let reqBody = {
-//             uri: (FB_GENERIC_API_URI + userID),
-//             qs: {
-//                 access_token: process.env.FB_PAGE_ACCESS_TOKEN,
-//                 fields: USER_PROFILE_OPTIONS
-//             },
-//             method: 'GET'
-//         };
-//         request(reqBody, (err, res, body) => {
-//             if (!err && res.statusCode == 200) {
-//                 resolve(body);
-//             }
-//             else {
-//                 reject(Error(err));
-//             }
-//         });
-//     });
-
-// };
 
 const fbSendAPI = (messageData) => {
     // Send a request to the faceboook SEND api.
@@ -132,7 +109,8 @@ const onReceievedMessage = (event) => {
         case 'yo':
         case 'hi':
         case 'hey':
-        case 'hello':
+        case 'hello'
+        case 'sup':
             getUserProfile(userID, (err, res, body) => {
                 let userProfile = JSON.parse(body);
                 let msg = 'Hi there!';
@@ -147,16 +125,15 @@ const onReceievedMessage = (event) => {
             });
             break;
         case 'price':
-            // todo: price -c usd|euro|etc (different currencies)
-            let client = new CoinbaseClient({'apiKey': userID, 'apiSecret' : CB_CREDS});
-            let msg = ERROR_RESPONSE_STR;
-            client.getExchangeRates({'currency': 'BTC'}, (err, res) => {
-                if (!err) {
-                    //will change to check myCurrency and then do rates[myCurrency]
-                    msg = '1 BTC = $' + res.data.rates.USD;
+            // todo: different currencies based on fb user profile info
+            let guru = new BitcoinGuru();
+            guru.getPrice(null/*change this to get from graph*/, (err, priceObj) => {
+                let msg = ERROR_RESPONSE_STR;
+                if (!err && priceObj) {
+                    msg = '1BTC = $' + priceObj.data.amount;
                 }
-                else {
-                    console.error('Unable to reach Coinbase API: ', err);
+                else{
+                    console.error('Unable to connect to Coinbase API', err);
                 }
                 sendTextMessage(userID, msg);
             });
