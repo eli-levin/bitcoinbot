@@ -79,8 +79,7 @@ const fbSendAPI = (messageData) => {
             console.log('Success: Sent message %s to recipient %s.', body.message_id, body.recipient_id);
         }
         else {
-            console.error(err);
-            console.error(res);
+            console.error(err? err : res);
         }
     });
 };
