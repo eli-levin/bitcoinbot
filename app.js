@@ -126,16 +126,11 @@ const onReceievedMessage = (event) => {
         case 'price':
             // todo: different currencies based on fb user profile info
             let guru = new BitcoinGuru();
-            guru.getPrice(null/*change this to get from graph*/, (err, priceObj) => {
-                let msg = ERROR_RESPONSE_STR;
-                if (!err && priceObj) {
-                    msg = '1BTC = $' + priceObj.data.amount;
-                }
-                else{
-                    console.error('Unable to connect to Coinbase API', err);
-                }
-                sendTextMessage(userID, msg);
-            });
+            guru.getPricePromise(userID/*, currency, time?*/)
+                .then(priceObj => {
+                    sendTextMessage(userID, '1 BTC = $' + priceObj.data.amount);
+                })
+                .catch(err => {console.error(err)});
             break;
         case 'insight':
             // todo: include graph of btc to usd (would require new function)
