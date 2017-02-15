@@ -10,6 +10,7 @@ const express        = require('express'),
       request        = require('request'),
       bodyParser     = require('body-parser'),
       CoinbaseClient = require('coinbase').Client,
+      fbGraph        = require('./lib/FacebookGraphService.js')
       os             = require('os'),
       app            = express();
 
@@ -48,21 +49,6 @@ const formulateInsightMessage = (userProfile) => {
               os.EOL + '.' + os.EOL + '.' + os.EOL + '.' + os.EOL + INSIGHT_LEGAL_WARNING;
     }
     return msg;
-};
-
-const getUserProfile = (userID, cb) => {
-    // Formulate a personalized insight message for the user descibed by userID.
-    let reqBody = {
-        uri: (FB_GENERIC_API_URI + userID),
-        qs: {
-            access_token: process.env.FB_PAGE_ACCESS_TOKEN,
-            fields: USER_PROFILE_OPTIONS
-        },
-        method: 'GET'
-    };
-
-    // Send the insight to the user via the callback cb.
-    request(reqBody, cb);
 };
 
 const fbSendAPI = (messageData) => {
@@ -110,18 +96,13 @@ const onReceievedMessage = (event) => {
         case 'hey':
         case 'hello':
         case 'sup':
-            getUserProfile(userID, (err, res, body) => {
-                let userProfile = JSON.parse(body);
-                let msg = 'Hi there!';
-                if (!err && res.statusCode == 200) {
-                    msg = `Hi, ${userProfile.first_name}!`;
-                }
-                else {
-                    console.error(err);
-                    console.error(res);
-                }
-                sendTextMessage(userID, msg);
-            });
+            fbGraph.getUserProfilePromise(userID)
+                .then(body => {
+                    let userProfile = JSON.parse(body);
+                    let msg = `Hi, ${userProfile.first_name}!`;
+                    sendTextMessage(userID, msg);
+                })
+                .catch(err => {console.error(err)});
             break;
         case 'price':
             // todo: different currencies based on fb user profile info
@@ -134,19 +115,13 @@ const onReceievedMessage = (event) => {
             break;
         case 'insight':
             // todo: include graph of btc to usd (would require new function)
-            getUserProfile(userID, (err, res, body) => {
-                let userProfile = JSON.parse(body);
-                let msg = ERROR_RESPONSE_STR;
-                if (!err && res.statusCode == 200) {
+            fbGraph.getUserProfilePromise(userID)
+                .then(body => {
+                    let userProfile = JSON.parse(body);
                     console.log('Success, recieved user information:', userProfile);
-                    msg = formulateInsightMessage(userProfile);
-                }
-                else {
-                    console.error(err);
-                    console.error(res);
-                }
-                sendTextMessage(userID, msg);
-            });
+                    sendTextMessage(userID, formulateInsightMessage(userProfile));
+                })
+                .catch(err => {console.error(err)});
             break;
         default:
             sendTextMessage(userID, DEFAULT_RESPONSE_STR);
@@ -204,6 +179,5 @@ app.listen(app.get('port'), () => {
 //
 // todo: change this to not shit
 module.exports = {
-    getUserProfile: getUserProfile,
     formulateInsightMessage: formulateInsightMessage
 };
