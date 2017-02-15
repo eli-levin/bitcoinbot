@@ -3,7 +3,7 @@
 const assert               = require('assert'),
       btcbot               = require('../app.js'),
       BitcoinGuru          = require('../lib/BitcoinGuru.js'),
-      FacebookGraphService = require('../lib/BitcoinGuru.js');
+      FacebookGraphService = require('../lib/FacebookGraphService.js');
 
 //
 // Stuff
@@ -39,7 +39,7 @@ describe('app', () => {
 //
 describe('FacebookGraphService', () => {
     describe('#getUserProfilePromise()', () => {
-        it('Should fetch the test user\'s facebook profile.' (done) => {
+        it('Should fetch the test user\'s facebook profile.', (done) => {
             //-- Begin test call
             fb.getUserProfilePromise(process.env.TEST_USER_ID)
                 .then(body => {
@@ -65,7 +65,7 @@ describe('FacebookGraphService', () => {
 //
 describe('BitcoinGuru', () => {
     describe('#getPricePromise(arg1, arg2)', () => {
-        it('Should fetch the current spot price of bitcoin.' (done) => {
+        it('Should fetch the current spot price of bitcoin.', (done) => {
             //-- Begin test call
             guru.getPricePromise('poop'/*todo: change this to the test user id*/, 'USD')
                 .then(priceObj => {
