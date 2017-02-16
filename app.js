@@ -10,7 +10,7 @@ const express        = require('express'),
       request        = require('request'),
       bodyParser     = require('body-parser'),
       CoinbaseClient = require('coinbase').Client,
-      fbGraph        = require('./lib/FacebookGraphService.js')
+      fbGraph        = require('./lib/FacebookGraphService.js'),
       os             = require('os'),
       app            = express();
 
