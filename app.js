@@ -18,8 +18,8 @@ const express        = require('express'),
 // Macros
 //
 const CB_CREDS              = 'public',
-      FB_SEND_URI           = 'https://graph.facebook.com/v2.6/me/messages',
-      FB_GENERIC_API_URI    = 'https://graph.facebook.com/v2.6/',
+      FB_SEND_URI           = 'https://graph.facebook.com/v2.8/me/messages',
+      FB_GENERIC_API_URI    = 'https://graph.facebook.com/v2.8/',
       ERROR_RESPONSE_STR    = 'Oops, something went wrong. Try again later...',
       DEFAULT_RESPONSE_STR  = 'Sorry, I don\'t know what that means. Say "help" for more info!',
       USER_PROFILE_OPTIONS  = 'first_name,last_name,profile_pic,locale,timezone,gender',
