@@ -162,7 +162,6 @@ app.listen(app.get('port'), () => {
 //
 // export functions for testing
 //
-// todo: change this to not shit
 module.exports = {
     formulateInsightMessage: formulateInsightMessage
 };
