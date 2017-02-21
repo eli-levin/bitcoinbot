@@ -10,7 +10,7 @@ const express        = require('express'),
       request        = require('request'),
       bodyParser     = require('body-parser'),
       CoinbaseClient = require('coinbase').Client,
-      fbGraph        = require('./lib/FacebookGraphService.js'),
+      fb             = require('./lib/FacebookGraph.js'),
       os             = require('os'),
       app            = express();
 
@@ -51,35 +51,6 @@ const formulateInsightMessage = (userProfile) => {
     return msg;
 };
 
-const fbSendAPI = (messageData) => {
-    // Send a request to the faceboook SEND api.
-    let reqBody = {
-        uri: FB_SEND_URI,
-        qs: { access_token: process.env.FB_PAGE_ACCESS_TOKEN },
-        method: 'POST',
-        json: messageData
-    };
-
-    request(reqBody, (err, res, body) => {
-        if (!err && res.statusCode == 200) {
-            console.log('Success: Sent message %s to recipient %s.', body.message_id, body.recipient_id);
-        }
-        else {
-            console.error(err? err : res);
-        }
-    });
-};
-
-const sendTextMessage = (recipientId, msg) => {
-    // Send message via send api.
-    // TODO: find a way to put callback in params for testing purposes (stubs) without making everything a fucking tornado.
-    let messageData = {
-        recipient: { id: recipientId },
-        message: { text: msg }
-    };
-    fbSendAPI(messageData);
-};
-
 const onReceievedMessage = (event) => {
     // Callback fork for message events webhook.
     // TODO: make this a full command line interface with minimist
@@ -89,18 +60,26 @@ const onReceievedMessage = (event) => {
     switch (messageText) {
         // todo: add easter eggs lulz
         case 'help':
-            sendTextMessage(userID, HELP_RESPONSE_STR);
+            fb.sendTextMessagePromise(userID, HELP_RESPONSE_STR)
+                //.then().catch(); <--- TODO: this
+                .then(body => {
+                    console.log('Success: Sent message %s to recipient %s.', body.message_id, body.recipient_id);
+                })
+                .catch(err => {console.error(err)});
             break;
         case 'yo':
         case 'hi':
         case 'hey':
         case 'hello':
         case 'sup':
-            fbGraph.getUserProfilePromise(userID)
+            fb.getUserProfilePromise(userID)
                 .then(body => {
                     let userProfile = JSON.parse(body);
                     let msg = `Hi, ${userProfile.first_name}!`;
-                    sendTextMessage(userID, msg);
+                    return fb.sendTextMessagePromise(userID, msg);
+                })
+                .then(body => {
+                    console.log('Success: Sent message %s to recipient %s.', body.message_id, body.recipient_id);
                 })
                 .catch(err => {console.error(err)});
             break;
@@ -109,17 +88,23 @@ const onReceievedMessage = (event) => {
             let guru = new BitcoinGuru();
             guru.getPricePromise(userID/*, currency, time?*/)
                 .then(priceObj => {
-                    sendTextMessage(userID, '1 BTC = $' + priceObj.data.amount);
+                    return fb.sendTextMessagePromise(userID, '1 BTC = $' + priceObj.data.amount);
+                })
+                .then(body => {
+                    console.log('Success: Sent message %s to recipient %s.', body.message_id, body.recipient_id);
                 })
                 .catch(err => {console.error(err)});
             break;
         case 'insight':
             // todo: include graph of btc to usd (would require new function)
-            fbGraph.getUserProfilePromise(userID)
+            fb.getUserProfilePromise(userID)
                 .then(body => {
                     let userProfile = JSON.parse(body);
                     console.log('Success, recieved user information:', userProfile);
-                    sendTextMessage(userID, formulateInsightMessage(userProfile));
+                    return fb.sendTextMessagePromise(userID, formulateInsightMessage(userProfile));
+                })
+                .then(body => {
+                    console.log('Success: Sent message %s to recipient %s.', body.message_id, body.recipient_id);
                 })
                 .catch(err => {console.error(err)});
             break;
