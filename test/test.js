@@ -1,3 +1,9 @@
+/////////////////////////
+// test.js
+// 2017 (c) Eli Levin
+// BitcoinBot
+/////////////////////////
+
 'use strict'
 
 const assert        = require('assert'),
@@ -44,40 +50,35 @@ describe('FacebookGraph', () => {
             //-- Begin test call
             fb.getUserProfilePromise(process.env.TEST_USER_ID)
                 .then(body => {
-                    //console.log('+++++RES++++\n--\n'+res+'\n');
                     let userProfile = JSON.parse(body);
-                    assert.equal(res.statusCode, 200, 'Expected successful status code in response ' + JSON.stringify(res, null, '\t'));
-                    assert(userProfile, 'Expected body object. Body = ' + JSON.stringify(res, null, '\t'));
-                    assert(userProfile.hasOwnProperty('first_name'), 'Expected body object with property first_name. Body = ' + JSON.stringify(res, null, '\t'));
-                    assert(userProfile.hasOwnProperty('last_name'), 'Expected body object with property last_name. Body = ' + JSON.stringify(res, null, '\t'));
-                    assert(userProfile.hasOwnProperty('profile_pic'), 'Expected body object with property profile_pic. Body = ' + JSON.stringify(res, null, '\t'));
-                    assert(userProfile.hasOwnProperty('locale'), 'Expected body object with property locale. Body = ' + JSON.stringify(res, null, '\t'));
-                    assert(userProfile.hasOwnProperty('timezone'), 'Expected body object with property timezone. Body = ' + JSON.stringify(res, null, '\t'));
-                    assert(userProfile.hasOwnProperty('gender'), 'Expected body object with property gender. Body = ' + JSON.stringify(res, null, '\t'));
-                    done();
-                }, res => {
-                    assert(res.hasOwnProperty('statusCode'), 'poooop');
+                    assert(userProfile, 'Expected body object. Body = ' + body);
+                    assert(userProfile.hasOwnProperty('first_name'), 'Expected body object with property first_name. Body = ' + body);
+                    assert(userProfile.hasOwnProperty('last_name'), 'Expected body object with property last_name. Body = ' + body);
+                    assert(userProfile.hasOwnProperty('profile_pic'), 'Expected body object with property profile_pic. Body = ' + body);
+                    assert(userProfile.hasOwnProperty('locale'), 'Expected body object with property locale. Body = ' + body);
+                    assert(userProfile.hasOwnProperty('timezone'), 'Expected body object with property timezone. Body = ' + body);
+                    assert(userProfile.hasOwnProperty('gender'), 'Expected body object with property gender. Body = ' + body);
                     done();
                 })
-                .catch(err => {done(err)});
+                .catch(err => done(err));
             //-- End test call
         });
     });
 
-    // describe('#sendTextMessagePromise()', () => {
-    //     it('Should send a text message to the test user.', (done) => {
-    //         //-- Begin test call
-    //         fb.sendTextMessagePromise(process.env.TEST_USER_ID, "Message sent from test on ." + os.EOL + new Date().toString())
-    //             .then(body => {
-    //                 let response = JSON.parse(body);
-    //                 assert(response.hasOwnProperty('recipient_id'), '' + JSON.stringify(res, null, '\t'));
-    //                 assert(response.hasOwnProperty('message_id'), );
-    //             })
-    //             .catch(err => {console.error(err);done();});
-    //         //-- End test call
-    //         done();
-    //     });
-    // });
+    describe('#sendTextMessagePromise()', () => {
+        it('Should send a text message to the test user.', (done) => {
+            //-- Begin test call
+            fb.sendTextMessagePromise(process.env.TEST_USER_ID, "Message sent from test on ." + os.EOL + new Date().toString())
+                .then(body => {
+                    // let bodyObj = JSON.parse(body);
+                    assert(body.hasOwnProperty('recipient_id'), 'Response should have field recipient_id' + JSON.stringify(body, null, '\t'));
+                    assert(body.hasOwnProperty('message_id'), 'Response should have field message_id' + JSON.stringify(body, null, '\t'));
+                    done();
+                })
+                .catch(err => done(err));
+            //-- End test call
+        });
+    });
 });
 
 //
