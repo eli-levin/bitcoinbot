@@ -9,9 +9,9 @@
 const express        = require('express'),
       request        = require('request'),
       bodyParser     = require('body-parser'),
-      CoinbaseClient = require('coinbase').Client,
       BitcoinGuru    = require('./lib/BitcoinGuru.js'),
       FacebookGraph  = require('./lib/FacebookGraph.js'),
+      MessageHandler = require('./lib/MessageHandler.js'),
       os             = require('os'),
       app            = express();
 
@@ -36,86 +36,6 @@ const CB_CREDS              = 'public',
 app.set('port', (process.env.PORT || 5000));
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
-
-//
-// Handler functions
-//
-const formulateInsightMessage = (userProfile) => {
-    // Procedural function to extract info and create an insight message.
-    let msg = ERROR_RESPONSE_STR;
-    if (userProfile) {
-        // placeholder for better insight algorithm
-        // check if market is in rally or dive and tell user if btcbot is buying more bitcoin
-        msg = `${userProfile["first_name"]}, the current trends show a market rally. People are buying!` +
-              os.EOL + '.' + os.EOL + '.' + os.EOL + '.' + os.EOL + INSIGHT_LEGAL_WARNING;
-    }
-    return msg;
-};
-
-const onReceievedMessage = (event) => {
-    // Callback fork for message events webhook.
-    // TODO: make this a full command line interface with minimist
-    let userID = event.sender.id;
-    let messageText = event.message.text.trim().toLowerCase();
-    let messageAttachments = event.message.attachments;
-    switch (messageText) {
-        // todo: add easter eggs lulz
-        case 'help':
-        let fb = new FacebookGraph();
-            fb.sendTextMessagePromise(userID, HELP_RESPONSE_STR)
-                //.then().catch(); <--- TODO: this
-                .then(body => {
-                    console.log('Success: Sent message %s to recipient %s.', body.message_id, body.recipient_id);
-                })
-                .catch(err => {console.error(err)});
-            break;
-        case 'yo':
-        case 'hi':
-        case 'hey':
-        case 'hello':
-        case 'sup':
-        let fb = new FacebookGraph();
-            fb.getUserProfilePromise(userID)
-                .then(body => {
-                    let userProfile = JSON.parse(body);
-                    let msg = `Hi, ${userProfile.first_name}!`;
-                    return fb.sendTextMessagePromise(userID, msg);
-                })
-                .then(body => {
-                    console.log('Success: Sent message %s to recipient %s.', body.message_id, body.recipient_id);
-                })
-                .catch(err => {console.error(err)});
-            break;
-        case 'price':
-            // todo: different currencies based on fb user profile info
-            let guru = new BitcoinGuru();
-            guru.getPricePromise(userID/*, currency, time?*/)
-                .then(priceString => {
-                    return fb.sendTextMessagePromise(userID, '1 BTC = $' + JSON.parse(priceString).data.amount);
-                })
-                .then(body => {
-                    console.log('Success: Sent message %s to recipient %s.', body.message_id, body.recipient_id);
-                })
-                .catch(err => {console.error(err)});
-            break;
-        case 'insight':
-            // todo: include graph of btc to usd (would require new function)
-            let fb = new FacebookGraph();
-            fb.getUserProfilePromise(userID)
-                .then(body => {
-                    let userProfile = JSON.parse(body);
-                    console.log('Success, recieved user information:', userProfile);
-                    return fb.sendTextMessagePromise(userID, formulateInsightMessage(userProfile));
-                })
-                .then(body => {
-                    console.log('Success: Sent message %s to recipient %s.', body.message_id, body.recipient_id);
-                })
-                .catch(err => {console.error(err)});
-            break;
-        default:
-            sendTextMessage(userID, DEFAULT_RESPONSE_STR);
-    }
-};
 
 //
 // Server request and webhook handlers.
@@ -148,7 +68,7 @@ app.post('/webhook', (req, res) => {
             // iterate over each messaging event
             entry.messaging.forEach((event) => {
                 if (event.message) {
-                    onReceievedMessage(event);
+                    MessageHandler.onReceievedMessage(event);
                 }
                 else{
                     console.log('Received unknown event:', event);
@@ -162,10 +82,3 @@ app.post('/webhook', (req, res) => {
 app.listen(app.get('port'), () => {
     console.log(`listening at http:\/\/localhost:${app.get('port')}`);
 });
-
-//
-// export functions for testing
-//
-module.exports = {
-    formulateInsightMessage: formulateInsightMessage
-};
