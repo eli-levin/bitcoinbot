@@ -10,7 +10,8 @@ const express        = require('express'),
       request        = require('request'),
       bodyParser     = require('body-parser'),
       CoinbaseClient = require('coinbase').Client,
-      fb             = require('./lib/FacebookGraph.js'),
+      BitcoinGuru    = require('./lib/BitcoinGuru.js'),
+      FacebookGraph  = require('./lib/FacebookGraph.js'),
       os             = require('os'),
       app            = express();
 
@@ -60,6 +61,7 @@ const onReceievedMessage = (event) => {
     switch (messageText) {
         // todo: add easter eggs lulz
         case 'help':
+        let fb = new FacebookGraph();
             fb.sendTextMessagePromise(userID, HELP_RESPONSE_STR)
                 //.then().catch(); <--- TODO: this
                 .then(body => {
@@ -72,6 +74,7 @@ const onReceievedMessage = (event) => {
         case 'hey':
         case 'hello':
         case 'sup':
+        let fb = new FacebookGraph();
             fb.getUserProfilePromise(userID)
                 .then(body => {
                     let userProfile = JSON.parse(body);
@@ -87,8 +90,8 @@ const onReceievedMessage = (event) => {
             // todo: different currencies based on fb user profile info
             let guru = new BitcoinGuru();
             guru.getPricePromise(userID/*, currency, time?*/)
-                .then(priceObj => {
-                    return fb.sendTextMessagePromise(userID, '1 BTC = $' + priceObj.data.amount);
+                .then(priceString => {
+                    return fb.sendTextMessagePromise(userID, '1 BTC = $' + JSON.parse(priceString).data.amount);
                 })
                 .then(body => {
                     console.log('Success: Sent message %s to recipient %s.', body.message_id, body.recipient_id);
@@ -97,6 +100,7 @@ const onReceievedMessage = (event) => {
             break;
         case 'insight':
             // todo: include graph of btc to usd (would require new function)
+            let fb = new FacebookGraph();
             fb.getUserProfilePromise(userID)
                 .then(body => {
                     let userProfile = JSON.parse(body);
