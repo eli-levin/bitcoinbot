@@ -70,7 +70,6 @@ describe('FacebookGraph', () => {
             //-- Begin test call
             fb.sendTextMessagePromise(process.env.TEST_USER_ID, "Message sent from test on ." + os.EOL + new Date().toString())
                 .then(body => {
-                    // let bodyObj = JSON.parse(body);
                     assert(body.hasOwnProperty('recipient_id'), 'Response should have field recipient_id' + JSON.stringify(body, null, '\t'));
                     assert(body.hasOwnProperty('message_id'), 'Response should have field message_id' + JSON.stringify(body, null, '\t'));
                     done();
@@ -84,19 +83,20 @@ describe('FacebookGraph', () => {
 //
 // Test BitcoinGuru
 //
-// describe('BitcoinGuru', () => {
-//     describe('#getPricePromise(arg1, arg2)', () => {
-//         it('Should fetch the current spot price of bitcoin.', (done) => {
-//             //-- Begin test call
-//             guru.getPricePromise('poop'/*todo: change this to the test user id*/, 'USD')
-//                 .then(priceObj => {
-//                     assert(priceObj, 'Expected a price object in the body of the response.');
-//                     assert(priceObj.hasOwnProperty('data'), 'Expected priceObj to have a data field.');
-//                     assert(priceObj.data.hasOwnProperty('amount'), 'Expected price\'s data object to have amount field.');
-//                     done();
-//                 })
-//                 .catch(err => {console.error(err);done();});
-//             //-- End test call
-//         });
-//     });
-// });
+describe('BitcoinGuru', () => {
+    describe('#getPricePromise(arg1, arg2)', () => {
+        it('Should fetch the current spot price of bitcoin.', (done) => {
+            //-- Begin test call
+            guru.getPricePromise('poop'/*todo: change this to the test user id*/, 'USD')
+                .then(priceString => {
+                    let priceObj = JSON.parse(priceString);
+                    assert(priceObj, 'Expected a price object in the body of the response.');
+                    assert(priceObj.hasOwnProperty('data'), 'Expected priceObj to have a data field.');
+                    assert(priceObj.data.hasOwnProperty('amount'), 'Expected price\'s data object to have amount field.');
+                    done();
+                })
+                .catch(err => done(err));
+            //-- End test call
+        });
+    });
+});
