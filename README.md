@@ -1,4 +1,5 @@
 # BitcoinBot
+[![Build Status](https://travis-ci.org/eli-levin/bitcoinbot.svg?branch=master)](https://travis-ci.org/eli-levin/bitcoinbot)
 The Facebook Messenger bot for instant Bitcoin news and analysis.
 
 ## Features
