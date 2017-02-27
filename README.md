@@ -6,9 +6,9 @@ BitcoinBot is the Facebook Messenger bot for instant Bitcoin news and analysis.
 Message this bot directly or add it to a group chat for on-demand bitcoin info!
 
 ## Features
-help -> list of commands BitcoinBot will recognize.   
-price -> current spot price of Bitcoin, given in your local currency.   
-insight -> current buyer trends on most popular exchanges.   
+`help` -> list of commands BitcoinBot will recognize.   
+`price` -> current spot price of Bitcoin, given in your local currency.   
+`insight` -> current buyer trends on most popular exchanges.   
 
 ## Usage
 Message the user `BtcMessengerBot` on facebook messenger :)
