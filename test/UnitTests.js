@@ -39,10 +39,10 @@ let guru = new BitcoinGuru();
 // Test FacebookGraph
 //
 describe('FacebookGraph', () => {
-    describe('#getUserProfilePromise()', () => {
+    describe('#getUserProfile()', () => {
         it('Should fetch the test user\'s facebook profile.', (done) => {
             //-- Begin test call
-            fb.getUserProfilePromise(process.env.TEST_USER_ID)
+            fb.getUserProfile(process.env.TEST_USER_ID)
                 .then(body => {
                     let userProfile = JSON.parse(body);
                     assert(userProfile, 'Expected body object. Body = ' + body);
@@ -59,10 +59,10 @@ describe('FacebookGraph', () => {
         });
     });
 
-    describe('#sendTextMessagePromise()', () => {
+    describe('#sendTextMessage()', () => {
         it('Should send a text message to the test user.', (done) => {
             //-- Begin test call
-            fb.sendTextMessagePromise(process.env.TEST_USER_ID, "Message sent from test on ." + os.EOL + new Date().toString())
+            fb.sendTextMessage(process.env.TEST_USER_ID, "Message sent from test on ." + os.EOL + new Date().toString())
                 .then(body => {
                     assert(body.hasOwnProperty('recipient_id'), 'Response should have field recipient_id' + JSON.stringify(body, null, '\t'));
                     assert(body.hasOwnProperty('message_id'), 'Response should have field message_id' + JSON.stringify(body, null, '\t'));
@@ -78,10 +78,10 @@ describe('FacebookGraph', () => {
 // Test BitcoinGuru
 //
 describe('BitcoinGuru', () => {
-    describe('#getPricePromise(arg1, arg2)', () => {
+    describe('#getPrice(arg1, arg2)', () => {
         it('Should fetch the current spot price of bitcoin.', (done) => {
             //-- Begin test call
-            guru.getPricePromise('poop'/*todo: change this to the test user id*/, 'USD')
+            guru.getPrice('poop'/*todo: change this to the test user id*/, 'USD')
                 .then(priceString => {
                     let priceObj = JSON.parse(priceString);
                     assert(priceObj, 'Expected a price object in the body of the response.');
