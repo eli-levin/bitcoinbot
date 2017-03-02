@@ -7,9 +7,9 @@
 'use strict'
 
 const assert         = require('assert'),
-      //MessageHandler = require('../lib/MessageHandler.js'),
-      BitcoinGuru    = require('../lib/BitcoinGuru.js'),
-      FacebookGraph  = require('../lib/FacebookGraph.js'),
+      //MessageHandler = require('../src/services/MessageHandler.js'),
+      BitcoinGuru    = require('../src/services/BitcoinGuru.js'),
+      FacebookGraph  = require('../src/services/FacebookGraph.js'),
       os             = require('os');
 
 //
