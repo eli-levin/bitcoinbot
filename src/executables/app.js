@@ -9,7 +9,7 @@
 const express        = require('express'),
       request        = require('request'),
       bodyParser     = require('body-parser'),
-      MessageHandler = require('./lib/MessageHandler.js'),
+      MessageHandler = require('../services/MessageHandler.js'),
       os             = require('os'),
       app            = express();
 
