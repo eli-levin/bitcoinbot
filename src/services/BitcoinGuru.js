@@ -29,7 +29,7 @@ BitcoinGuru.prototype.getPrice = (userId, currency, time) => {
         };
         
         if (time) { options['qs'] = {date: time}; }
-        request(options, (err, res, body) => {
+        return request(options, (err, res, body) => {
             if (!err && res.statusCode == 200) {
                 resolve(body);
             }

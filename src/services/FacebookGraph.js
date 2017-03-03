@@ -27,7 +27,7 @@ FacebookGraph.prototype.getUserProfile = (userID) => {
             },
             method: 'GET'
         };
-        request(reqBody, (err, res, body) => {
+        return request(reqBody, (err, res, body) => {
             if (!err && res.statusCode == 200) {
                 resolve(body);
             }
@@ -52,7 +52,7 @@ FacebookGraph.prototype.sendTextMessage = (recipientId, message) => {
                 message: { text: message }
             }
         };
-        request(reqBody, (err, res, body) => {
+        return request(reqBody, (err, res, body) => {
             if (!err && res.statusCode == 200) {
                 resolve(body);
             }

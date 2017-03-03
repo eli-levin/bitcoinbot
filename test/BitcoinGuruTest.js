@@ -20,17 +20,15 @@ let guru = new BitcoinGuru();
 //
 describe('BitcoinGuru', () => {
     describe('#getPrice(arg1, arg2)', () => {
-        it('Should fetch the current spot price of bitcoin.', (done) => {
+        it('Should fetch the current spot price of bitcoin.', () => {
             //-- Begin test call
-            guru.getPrice('poop'/*todo: change this to the test user id*/, 'USD')
+            return guru.getPrice('poop'/*todo: change this to the test user id*/, 'USD')
                 .then(priceString => {
                     let priceObj = JSON.parse(priceString);
                     assert(priceObj, 'Expected a price object in the body of the response.');
                     assert(priceObj.hasOwnProperty('data'), 'Expected priceObj to have a data field.');
                     assert(priceObj.data.hasOwnProperty('amount'), 'Expected price\'s data object to have amount field.');
-                    done();
-                })
-                .catch(err => done(err));
+                });
             //-- End test call
         });
     });

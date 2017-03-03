@@ -17,13 +17,13 @@ const assert      = require('assert'),
 //
 // describe('MessageHandler', () => {
 //     describe('#formulateInsightMessage()', () => {
-//         it('Should create an insight message with a crude analysis of current trends.', (done) => {
+//         it('Should create an insight message with a crude analysis of current trends.', () => {
 //             // todo: implement tests
 //         });
 //     });
 
 //     describe('#onReceievedMessage()', () => {
-//         it('Should ...'/*todo: make this function not shit*/, (done) => {
+//         it('Should ...'/*todo: make this function not shit*/, () => {
 //             // todo: implement tests
 //         });
 //     });
