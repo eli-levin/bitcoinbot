@@ -93,7 +93,7 @@ MessageHandler.prototype.onReceievedMessage = (event) => {
                 .then(body => {
                     let userProfile = JSON.parse(body);
                     console.log('Success, recieved user information:', userProfile);
-                    return fb.sendTextMessage(userID, this.formulateInsightMessage(userProfile));
+                    return fb.sendTextMessage(userID, fb.formulateInsightMessage(userProfile));
                 })
                 .then(body => {
                     // todo : DO NOT LOG THIS IN TESTS
