@@ -46,8 +46,8 @@ MessageHandler.prototype.onReceievedMessage = (event) => {
     let userID = event.sender.id;
     let messageText = event.message.text.trim().toLowerCase();
     let messageAttachments = event.message.attachments;
-    let fb = FacebookGraph();
-    let guru = BitcoinGuru();
+    let fb = new FacebookGraph();
+    let guru = new BitcoinGuru();
     switch (messageText) {
         // todo: add easter eggs lulz
         case 'help':
