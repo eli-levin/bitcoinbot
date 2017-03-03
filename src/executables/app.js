@@ -14,6 +14,11 @@ const express        = require('express'),
       app            = express();
 
 //
+// Todo: make this not suck
+//
+const handler = new MessageHandler();
+
+//
 // Init port in app table and process the url and json parsers
 //
 app.set('port', (process.env.PORT || 5000));
@@ -51,7 +56,7 @@ app.post('/webhook', (req, res) => {
             // iterate over each messaging event
             entry.messaging.forEach((event) => {
                 if (event.message) {
-                    MessageHandler.onReceievedMessage(event);
+                    handler.onReceievedMessage(event);
                 }
                 else{
                     console.log('Received unknown event:', event);

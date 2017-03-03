@@ -112,6 +112,4 @@ MessageHandler.prototype.onReceievedMessage = (event) => {
 //
 // TODO: should make this not singleton for async?
 //
-module.exports = () => {
-    return new MessageHandler();
-};
+module.exports = MessageHandler;
