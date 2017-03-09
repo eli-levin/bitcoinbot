@@ -9,7 +9,7 @@
 const express        = require('express'),
       request        = require('request'),
       bodyParser     = require('body-parser'),
-      MessageHandler = require('../services/MessageHandler.js'),
+      MessageHandler = require('../services/ai/MessageHandler.js'),
       os             = require('os'),
       app            = express();
 
@@ -17,6 +17,10 @@ const express        = require('express'),
 // Todo: make this not suck
 //
 const handler = new MessageHandler();
+// in order to make this not suck, bootstrap the chatbot by
+// registering its abilities through the ActionEventRegistry:
+// TODO: create all action event type handlers
+// TODO: pass all functions to the registry
 
 //
 // Init port in app table and process the url and json parsers
