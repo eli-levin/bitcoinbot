@@ -1,9 +1,9 @@
 /////////////////////////
-// Ability.js
+// Chatbot.js
 // 2017 (c) Eli Levin
 // BitcoinBot
 /////////////////////////
 
 'use strict'
 
-function Ability(){};
+// temporary... might fill this or move it to its own project...

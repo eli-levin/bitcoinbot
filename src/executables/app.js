@@ -17,10 +17,25 @@ const express        = require('express'),
 // Todo: make this not suck
 //
 const handler = new MessageHandler();
-// in order to make this not suck, bootstrap the chatbot by
-// registering its abilities through the ActionEventRegistry:
-// TODO: create all action event type handlers
-// TODO: pass all functions to the registry
+
+// -- chatbot framework --
+// Q: who should decide to sendTextMessage() and who should actually call sendTextMessage()?
+// A: the chatbot framework should provide interfaces to send messages back to user. there can be multiple types of these depending on what you want to send (text, pictures, etc.)
+// --
+// chatbot is a brain
+// it 1. parses a message, 2. formulates a response, 3. delivers the response
+// you have to teach it how to do all these things.
+// teach it to extract an intent from a message
+// teach it to associate responses with these extracted intents
+// associated responses should have a type (should contain information on how to deliver that response)
+// --
+// message reaction = intent + ability
+// 1. load abilities - now have a set of abilities
+//     - abilities should always return an OBJECT that will be sent to the respective chatbot response function
+// 2. load expected messages - now have a set of things we can respond to
+// 3. register ability to each expected message
+// 4. on messaging event, extract intent
+// 5. lookup ability via registry and then call the ability with the event as param
 
 //
 // Init port in app table and process the url and json parsers
